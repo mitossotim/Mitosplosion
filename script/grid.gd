@@ -141,36 +141,60 @@ func promouvoir_pion(pion):
 # IA simple pour les noirs
 # -------------------------
 func ia_play():
+	# On crée une liste pour stocker les pièces noires qui peuvent bouger
 	var black_pieces = []
 	for piece in piece_positions.values():
-		if piece.couleur == "NOIR":
-			if piece.get_valid_moves(piece_positions).size() > 0:
-				black_pieces.append(piece)
+		if piece.couleur == "NOIR":  # On sélectionne uniquement les pièces noires
+			if piece.get_valid_moves(piece_positions).size() > 0:  # Si la pièce a au moins un coup valide
+				black_pieces.append(piece)  # On l’ajoute à la liste
 
+	# Si aucune pièce noire ne peut jouer, l’IA arrête son tour
 	if black_pieces.size() == 0:
 		return
 
-	var piece = black_pieces[randi() % black_pieces.size()]
-	var moves = piece.get_valid_moves(piece_positions)
-	var move = moves[randi() % moves.size()]
+	# --- Amélioration : on essaye de trouver une capture avant de jouer au hasard ---
+	var best_piece = null
+	var best_move = null
 
-	if piece_positions.has(move):
-		piece_positions[move].queue_free()
-		piece_positions.erase(move)
+	# On parcourt toutes les pièces noires et leurs coups
+	for piece in black_pieces:
+		for move in piece.get_valid_moves(piece_positions):
+			# Si le coup mange une pièce ennemie, on le choisit en priorité
+			if piece_positions.has(move) and piece_positions[move].couleur == "BLANC":
+				best_piece = piece
+				best_move = move
+				break  # On arrête la recherche dès qu’on trouve une capture
+		if best_piece != null:
+			break
 
-	piece_positions.erase(piece.grid_position)
-	piece.move_to(move)
-	piece_positions[move] = piece
+	# Si aucune capture trouvée → on joue au hasard (comme avant)
+	if best_piece == null:
+		best_piece = black_pieces[randi() % black_pieces.size()]
+		var moves = best_piece.get_valid_moves(piece_positions)
+		best_move = moves[randi() % moves.size()]
 
-	# Vérification promotion du pion
-	if piece.type == "PION":
-		if (piece.couleur == "BLANC" and move.y == 0) or (piece.couleur == "NOIR" and move.y == 7):
-			promouvoir_pion(piece)
+	# Si le coup choisi mange une pièce, on la supprime du jeu
+	if piece_positions.has(best_move):
+		piece_positions[best_move].queue_free()
+		piece_positions.erase(best_move)
 
-	# Vérification fin de partie
+	# On enlève l’ancienne position de la pièce
+	piece_positions.erase(best_piece.grid_position)
+
+	# On déplace la pièce sur sa nouvelle case
+	best_piece.move_to(best_move)
+	piece_positions[best_move] = best_piece
+
+	# --- Vérification promotion pion ---
+	if best_piece.type == "PION":
+		if (best_piece.couleur == "BLANC" and best_move.y == 0) or (best_piece.couleur == "NOIR" and best_move.y == 7):
+			promouvoir_pion(best_piece)
+
+	# --- Vérification fin de partie ---
 	if check_game_over():
 		return
 
+	# On passe le tour aux blancs
 	current_turn = "BLANC"
 
 # -------------------------

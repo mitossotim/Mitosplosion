@@ -10,7 +10,7 @@ config_version=5
 
 [application]
 
-config/name="MVTW entrainement"
+config/name="Mitosplosion"
 run/main_scene="uid://b7pdlnw538sb7"
 config/features=PackedStringArray("4.4", "Forward Plus")
-config/icon="uid://b4d1cm5b7yfxg"
+config/icon="uid://bhoi2y7nvmnn7"

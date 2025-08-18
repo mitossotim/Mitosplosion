@@ -67,8 +67,7 @@ func get_valid_moves(piece_positions: Dictionary) -> Array:
 			# Par défaut aucun coup
 			pass
 	return moves
-
-
+	
 func _ray_moves(piece_positions: Dictionary, directions: Array) -> Array:
 	var out: Array = []
 	for dir in directions:
@@ -82,6 +81,8 @@ func _ray_moves(piece_positions: Dictionary, directions: Array) -> Array:
 			out.append(p)
 			p += dir
 	return out
+
+
 
 
 func _knight_moves(piece_positions: Dictionary) -> Array:
