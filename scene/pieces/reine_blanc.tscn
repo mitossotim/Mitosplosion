@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://hv057kr1nuoa"]
+
+[ext_resource type="PackedScene" uid="uid://bpp3x72mgcjbs" path="res://scene/piece_base.tscn" id="1_3p71j"]
+[ext_resource type="Texture2D" uid="uid://5hp7h2sn10h2" path="res://texture/piece/blanc/reine blanc.png" id="2_14ycv"]
+
+[node name="piece" instance=ExtResource("1_3p71j")]
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_14ycv")

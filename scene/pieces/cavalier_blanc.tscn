@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://ccgp7qlf4ywec"]
+
+[ext_resource type="PackedScene" uid="uid://bpp3x72mgcjbs" path="res://scene/piece_base.tscn" id="1_hs8hy"]
+[ext_resource type="Texture2D" uid="uid://dy1mjpcg3o05" path="res://texture/piece/blanc/cavalier blanc.png" id="2_17cmu"]
+
+[node name="piece" instance=ExtResource("1_hs8hy")]
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_17cmu")
