@@ -1,22 +1,21 @@
 extends Node2D
 
-const TILE_SIZE = 81
-const GRID_SIZE = 8
-const PIECE_SCENE = preload("res://scene/piece_base.tscn")
+const TILE_SIZE = 124#C'est la taille largeur et hauteur en pixels d'une case du damier
+const GRID_SIZE = 8 #nombre de case du damier
+const PIECE_SCENE = preload("res://scene/piece_base.tscn") #on load la scene piece
 
-var selected_piece = null
+var selected_piece = null #selectione une piece null si aucune piece
 var piece_positions = {}  # Dictionnaire: position -> pièce
 var valid_moves = []
-var current_turn = "BLANC"
+var current_turn = "BLANC"# Tour actuel
 
 func _ready():
-	randomize()
-	queue_redraw()
-	placer_toutes_les_pieces()
+	randomize()  # le générateur de nombres aléatoires 
+	queue_redraw()  # Force le redessin du Node2D 
+	placer_toutes_les_pieces() #appelle a la fonction pour tavu placer les pieces
 
-# -------------------------
-# Placement des pièces
-# -------------------------
+# on load tout les pieces et on les places
+
 func placer_toutes_les_pieces():
 	# Pièces noires
 	_creer_piece("res://texture/piece/noir/tour noir.png", "TOUR", "NOIR", Vector2(0,0))
@@ -42,34 +41,40 @@ func placer_toutes_les_pieces():
 	for x in range(8):
 		_creer_piece("res://texture/piece/blanc/pion blanc.png", "PION", "BLANC", Vector2(x,6))
 
-# -------------------------
-# Création d’une pièce
-# -------------------------
-func _creer_piece(texture_path: String, type: String, couleur: String, pos_case: Vector2):
-	var piece = PIECE_SCENE.instantiate()
-	piece.texture_path = texture_path
-	piece.type = type
-	piece.couleur = couleur
-	piece.move_to(pos_case)
-	piece.grid_position = pos_case
-	piece_positions[pos_case] = piece
-	add_child(piece)
 
-# -------------------------
+# Création d’une pièce
+
+func _creer_piece(texture_path: String, type: String, couleur: String, pos_case: Vector2):
+	# texture_path (image), type (pion/dame), couleur (équipe), pos_case (position)
+	var piece = PIECE_SCENE.instantiate()          # on copie avec instantiate la pièce
+	piece.texture_path = texture_path             # Assignation du chemin de texture
+	piece.type = type                             # Définit le type (Pion/Dame/etc)
+	piece.couleur = couleur                       # Définit la couleur (Blanc/Noir)
+	piece.move_to(pos_case)                       # Positionne visuellement la pièce
+	piece.grid_position = pos_case                # Stocke sa position logique
+	piece_positions[pos_case] = piece             # Enregistre dans le dictionnaire
+	add_child(piece)                              # Ajoute à la scène
+	
+	
+
+
+
 # Dessin du plateau
-# -------------------------
 func _draw():
-	for x in range(GRID_SIZE):
+	for x in range(GRID_SIZE): #boucle pour placer piece en x et y
 		for y in range(GRID_SIZE):
-			var color = Color.WHITE if (x + y) % 2 == 0 else Color.LIGHT_BLUE
+			var color = Color.WHITE if (x + y) % 2 == 0 else Color.BURLYWOOD#alternance de couleur
 			draw_rect(Rect2(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE), color)
 
-	for pos in valid_moves:
-		draw_rect(Rect2(pos.x * TILE_SIZE, pos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), Color(0, 1, 0, 0.4))
+	for i in valid_moves: #on cherche dans la list les bon moves
+		draw_rect(Rect2(i.x * TILE_SIZE, i.y * TILE_SIZE, TILE_SIZE, TILE_SIZE), Color(0.1, 0, 0.7, 0.2))
+		#draw_rect(rectangle: Rect2, couleur: Color)
+		#Rect2(position_x, position_y, largeur, hauteur)
 
-# -------------------------
-# Gestion des clics
-# -------------------------
+
+
+# Gestion des clics CODE A REVOIR 
+
 func _input(event):
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		var clicked_pos = get_global_mouse_position()
@@ -122,24 +127,24 @@ func _input(event):
 				valid_moves.clear()
 				queue_redraw()
 
-# -------------------------
-# Promotion d’un pion
-# -------------------------
+
+# Promotion d’un pion en reine
 func promouvoir_pion(pion):
 	var couleur = pion.couleur
 	var pos_case = pion.grid_position
+	# Chemin de la texture de la reine correspondante
 	var texture_path = "res://texture/piece/%s/reine %s.png" % [couleur.to_lower(), couleur.to_lower()]
 
 	# Supprime le pion
 	piece_positions.erase(pos_case)
 	pion.queue_free()
 
-	# Crée la reine
+	# Crée la reine à la même position
 	_creer_piece(texture_path, "REINE", couleur, pos_case)
 
-# -------------------------
+
 # IA simple pour les noirs
-# -------------------------
+
 func ia_play():
 	# On crée une liste pour stocker les pièces noires qui peuvent bouger
 	var black_pieces = []
@@ -197,13 +202,13 @@ func ia_play():
 	# On passe le tour aux blancs
 	current_turn = "BLANC"
 
-# -------------------------
-# Vérification fin de partie
-# -------------------------
+
+# Vérification de fin de partie
 func check_game_over() -> bool:
 	var roi_blanc_existe = false
 	var roi_noir_existe = false
 
+	# Vérifie si les rois existent encore
 	for piece in piece_positions.values():
 		if piece.type == "ROI":
 			if piece.couleur == "BLANC":
@@ -211,6 +216,7 @@ func check_game_over() -> bool:
 			elif piece.couleur == "NOIR":
 				roi_noir_existe = true
 
+	# Si un roi a été capturé, partie terminée
 	if not roi_blanc_existe:
 		print("NOIR GAGNE ! Roi blanc capturé")
 		return true
@@ -218,7 +224,7 @@ func check_game_over() -> bool:
 		print("BLANC GAGNE ! Roi noir capturé")
 		return true
 
-	# Vérifier pat
+	# Vérification de pat (aucun coup possible)
 	if not has_any_valid_moves("BLANC") and roi_blanc_existe:
 		print("PAT ! Égalité")
 		return true
@@ -226,11 +232,13 @@ func check_game_over() -> bool:
 		print("PAT ! Égalité")
 		return true
 
-	return false
+	return false  # Partie continue
+	
+# Vérifie si une couleur a encore des coups possibles
 
 func has_any_valid_moves(couleur: String) -> bool:
 	for piece in piece_positions.values():
 		if piece.couleur == couleur:
 			if piece.get_valid_moves(piece_positions).size() > 0:
-				return true
-	return false
+				return true  # Au moins un coup possible
+	return false # Aucun coup possible

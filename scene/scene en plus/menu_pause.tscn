@@ -1,0 +1,50 @@
+[gd_scene load_steps=2 format=3 uid="uid://igub8lsyg66h"]
+
+[ext_resource type="Script" uid="uid://ctdx81314fr1s" path="res://script/menu_pause.gd" id="1_xp8f4"]
+
+[node name="menu_pause" type="CanvasLayer"]
+script = ExtResource("1_xp8f4")
+
+[node name="Panel" type="Panel" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
+layout_mode = 0
+offset_left = 864.0
+offset_top = 405.0
+offset_right = 989.0
+offset_bottom = 517.0
+alignment = 1
+
+[node name="rejouer" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 33
+text = "rejouer
+"
+
+[node name="quitter" type="Button" parent="Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 33
+text = "quitter"
+
+[node name="Label" type="Label" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -88.0
+offset_top = -184.0
+offset_right = 84.0
+offset_bottom = -108.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 55
+text = "PAUSE"
+
+[connection signal="button_down" from="Panel/VBoxContainer/rejouer" to="." method="_on_rejouer_button_down"]
+[connection signal="button_down" from="Panel/VBoxContainer/quitter" to="." method="_on_quitter_button_down"]

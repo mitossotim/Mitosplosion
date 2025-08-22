@@ -1,8 +1,13 @@
-[gd_scene load_steps=2 format=3 uid="uid://b7pdlnw538sb7"]
+[gd_scene load_steps=3 format=3 uid="uid://b7pdlnw538sb7"]
 
 [ext_resource type="Script" uid="uid://beddan7705xls" path="res://script/grid.gd" id="1_itxqv"]
+[ext_resource type="PackedScene" uid="uid://igub8lsyg66h" path="res://scene/scene en plus/menu_pause.tscn" id="1_v0l8b"]
 
 [node name="main" type="Node2D"]
 
 [node name="Grid" type="Node2D" parent="."]
 script = ExtResource("1_itxqv")
+
+[node name="menu_pause" parent="." instance=ExtResource("1_v0l8b")]
+process_mode = 3
+visible = false
